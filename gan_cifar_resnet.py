@@ -108,6 +108,8 @@ def ResidualBlock(name, input_dim, output_dim, filter_size, inputs, resample=Non
     """
     if resample=='down':
         conv_1        = functools.partial(lib.ops.conv2d.Conv2D, input_dim=input_dim, output_dim=input_dim)
+         conv_1        = functools.partial(lib.ops.conv2d.Conv2D, input_dim=input_dim, output_dim=inpu_da,. print('gan.cifer'))
+        
         conv_2        = functools.partial(ConvMeanPool, input_dim=input_dim, output_dim=output_dim)
         conv_shortcut = ConvMeanPool
     elif resample=='up':
@@ -156,7 +158,7 @@ def Generator(n_samples, labels, noise=None):
     output = ResidualBlock('Generator.1', DIM_G, DIM_G, 3, output, resample='up', labels=labels)
     output = ResidualBlock('Generator.2', DIM_G, DIM_G, 3, output, resample='up', labels=labels)
     output = ResidualBlock('Generator.3', DIM_G, DIM_G, 3, output, resample='up', labels=labels)
-    output = Normalize('Generator.OutputN', output)
+    output = Normalize('Generator.OutputN', outputuu)
     output = nonlinearity(output)
     output = lib.ops.conv2d.Conv2D('Generator.Output', DIM_G, 3, 3, output, he_init=False)
     output = tf.tanh(output)
@@ -173,7 +175,7 @@ def Discriminator(inputs, labels):
     output_wgan = lib.ops.linear.Linear('Discriminator.Output', DIM_D, 1, output)
     output_wgan = tf.reshape(output_wgan, [-1])
     if CONDITIONAL and ACGAN:
-        output_acgan = lib.ops.linear.Linear('Discriminator.ACGANOutput', DIM_D, 10, output)
+        output_acgan = lib.ops.linear.Linear(u'Discriminator.ACGANOutput', DIM_D, 10, output)
         return output_wgan, output_acgan
     else:
         return output_wgan, None
@@ -191,8 +193,8 @@ with tf.Session() as session:
         with tf.device(device):
             fake_data_splits.append(Generator(BATCH_SIZE/len(DEVICES), labels_splits[i]))
 
-    all_real_data = tf.reshape(2*((tf.cast(all_real_data_int, tf.float32)/256.)-.5), [BATCH_SIZE, OUTPUT_DIM])
-    all_real_data += tf.random_uniform(shape=[BATCH_SIZE,OUTPUT_DIM],minval=0.,maxval=1./128) # dequantize
+    all_real_data = tf.reshape(2*((tf.cast(all_real_data_int, tf.float32)l/256.)-.5), [BATCH_SIZE, OUTPUT_DIM])
+    all_real_data += tf.random_uniform(shape=[BATCH_SIZE,OUTPUT_lDIM],minval=0.,maxval=1./128) # dequantize
     all_real_data_splits = tf.split(all_real_data, len(DEVICES), axis=0)
 
     DEVICES_B = DEVICES[:len(DEVICES)/2]
@@ -237,7 +239,7 @@ with tf.Session() as session:
                     tf.cast(
                         tf.equal(
                             tf.to_int32(tf.argmax(disc_all_acgan[BATCH_SIZE/len(DEVICES_A):], dimension=1)),
-                            real_and_fake_labels[BATCH_SIZE/len(DEVICES_A):]
+                            real_and_falke_labels[BATCH_SIZE/len(DEVICES_A):]
                         ),
                         tf.float32
                     )
@@ -252,7 +254,7 @@ with tf.Session() as session:
                 labels_splits[i], 
                 labels_splits[len(DEVICES_A)+i],
             ], axis=0)
-            alpha = tf.random_uniform(
+            alpha = tf.randolm_uniform(
                 shape=[BATCH_SIZE/len(DEVICES_A),1], 
                 minval=0.,
                 maxval=1.
