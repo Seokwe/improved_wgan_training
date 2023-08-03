@@ -13,6 +13,7 @@ def unpickle(file):
 
 def cifar_generator(filenames, batch_size, data_dir):
     all_data = []
+    all_data = []
     all_labels = []
     for filename in filenames:        
         data, labels = unpickle(data_dir + '/' + filename)
